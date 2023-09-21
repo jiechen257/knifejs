@@ -1,5 +1,5 @@
-
 ## setInterval
+
 ```js
 function countDown(seconds) {   // seconds就是传入的倒计时，一般是毫秒expired_time / 1000得到的值
 	setInterval({
@@ -19,39 +19,38 @@ function countDown(seconds) {   // seconds就是传入的倒计时，一般是�
 ## 改进一：setTimeout
 
 ```js
-    const interval = 1000 // 设定倒计时规则为每秒倒计时
-    let totalCount = 30000 // 设定总倒计时长为30s
-    let count = 0 // 记录递归已执行次数，以倒计时时间间隔 interval=1s 为例，那么count就相当于如果没有时间偏差情况下的理想执行时间
-    
-    const startTime = new Date().getTime(); // 记录程序开始运行的时间
-    let timeoutID = setTimeout(countDownFn, interval)
-    
-    // 倒计时回调函数
-    function countDownFn() {
-        count++ // count自增，记录理想执行时间
-        // 获取当前时间减去刚开始记录的startTime再减去理想执行时间得到时间偏差：等待执行栈为空的时间
-        const offset = new Date().getTime() - startTime - count * interval
-        let nextTime = interval - offset // 根据时间偏差，计算下次倒计时设定的回调时间，从而达到纠正的目的
-        if (nextTime < 0 ) {
-            nextTime = 0
-        }
-        totalCount -= interval
-        if (totalCount < 0) {
-            clearTimeout(timeoutID)
-        } else {
-            timeoutID = setTimeout(countDownFn, nextTime)
-        }
-    }
-```
+const interval = 1000; // 设定倒计时规则为每秒倒计时
+let totalCount = 30000; // 设定总倒计时长为30s
+let count = 0; // 记录递归已执行次数，以倒计时时间间隔 interval=1s 为例，那么count就相当于如果没有时间偏差情况下的理想执行时间
 
+const startTime = new Date().getTime(); // 记录程序开始运行的时间
+let timeoutID = setTimeout(countDownFn, interval);
+
+// 倒计时回调函数
+function countDownFn() {
+  count++; // count自增，记录理想执行时间
+  // 获取当前时间减去刚开始记录的startTime再减去理想执行时间得到时间偏差：等待执行栈为空的时间
+  const offset = new Date().getTime() - startTime - count * interval;
+  let nextTime = interval - offset; // 根据时间偏差，计算下次倒计时设定的回调时间，从而达到纠正的目的
+  if (nextTime < 0) {
+    nextTime = 0;
+  }
+  totalCount -= interval;
+  if (totalCount < 0) {
+    clearTimeout(timeoutID);
+  } else {
+    timeoutID = setTimeout(countDownFn, nextTime);
+  }
+}
+```
 
 核心思想就是 `diffTime` ： 利用进入函数时获取的 startTime 和 offeset，计算得到下一次时间的执行准确时间，如果超时，进行重置操作，以此来不断调整倒计时时间达到精确计时
 
-## 改进二：使用requestAnimationFrame
-本质上还是 diffTime 的思想，只不过计时的精度又提升了，从 setTimeout 到 requestAnimationFrame 
+## 改进二：使用 requestAnimationFrame
 
-API参考：[window.requestAnimationFrame - Web API 接口参考 | MDN](https://developer.mozilla.org/zh-CN/docs/Web/API/Window/requestAnimationFrame)
+本质上还是 diffTime 的思想，只不过计时的精度又提升了，从 setTimeout 到 requestAnimationFrame
 
+API 参考：[window.requestAnimationFrame - Web API 接口参考 | MDN](https://developer.mozilla.org/zh-CN/docs/Web/API/Window/requestAnimationFrame)
 
 ```js
 durationFormat(time) {
@@ -101,7 +100,7 @@ function countDown(seconds) {
 
     let startTime = Date.now() // 记录程序开始运行的时间
     requestAnimation(countDownFn(totalCount))
-    
+
     // 倒计时回调函数
     function countDownFn() {
         if (totalCount < 0) {
@@ -119,4 +118,4 @@ function countDown(seconds) {
 
 ```
 
-从两个 API 的设计来看，requestAnimationFrame实现的倒计时更为精准，但setTimeout 应该也够用了，看自己具体使用场景的取舍
+从两个 API 的设计来看，requestAnimationFrame 实现的倒计时更为精准，但 setTimeout 应该也够用了，看自己具体使用场景的取舍
